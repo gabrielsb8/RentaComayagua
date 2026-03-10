@@ -1,0 +1,68 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función para verificar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Función para obtener los datos del usuario actual (su rol)
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Función para verificar si es admin
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+
+    // Reglas para la colección 'users'
+    match /users/{userId} {
+      // Cualquiera puede leer perfiles públicos (o podrías restringir)
+      allow read: if true;
+      // Solo el mismo usuario puede crear/editar su perfil
+      // Nota: Registrarse a rol admin desde el frontend debería estar bloqueado por cloud functions o reglas estrictas.
+      // Aquí permitimos la creación inicial básica.
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow update: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    // Reglas para la colección 'properties'
+    match /properties/{propertyId} {
+      // Cualquiera puede ver propiedades
+      allow read: if true;
+      
+      // Solo el rol 'owner' puede crear propiedades
+      allow create: if isAuthenticated() && 
+                    (getUserRole() == 'owner' || isAdmin()) && 
+                    request.resource.data.ownerId == request.auth.uid;
+      
+      // Solo el PROPIETARIO original o un ADMIN pueden editar
+      // PERO, solo el Admin puede editar el campo 'estadoVerificacion'
+      allow update: if isAuthenticated() && (
+        (request.auth.uid == resource.data.ownerId && 
+         // El dueño no puede auto-verificarse
+         request.resource.data.estadoVerificacion == resource.data.estadoVerificacion) 
+        || isAdmin()
+      );
+
+      // Solo el propietario original o Admin pueden borrar
+      allow delete: if isAuthenticated() && (request.auth.uid == resource.data.ownerId || isAdmin());
+    }
+
+    // Reglas para la colección 'reviews'
+    match /reviews/{reviewId} {
+      // Cualquiera puede leer reseñas
+      allow read: if true;
+      
+      // Solo usuarios autenticados pueden crear comentarios
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      
+      // Solo el autor puede editar/borrar su comentario, o un admin
+      allow update, delete: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+  }
+}

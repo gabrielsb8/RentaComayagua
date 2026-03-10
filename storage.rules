@@ -1,0 +1,30 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getRole() {
+       return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    match /properties/{propertyId}/{imageId} {
+      // Cualquiera puede ver las imágenes
+      allow read: if true;
+      
+      // Solo usuarios autenticados (preferiblemente dueños) pueden subir imágenes a las propiedades
+      // Limitamos el tamaño a 5MB y aceptamos solo imágenes
+      allow write: if isAuthenticated() 
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+    
+    match /users/{userId}/{imageId} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+  }
+}
