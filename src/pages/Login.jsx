@@ -12,8 +12,22 @@ export default function Login() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login, register } = useAuth();
+    const { login, register, loginWithGoogle } = useAuth();
     const navigate = useNavigate();
+
+    const handleGoogleLogin = async () => {
+        setError('');
+        setLoading(true);
+        try {
+            await loginWithGoogle(role);
+            navigate('/');
+        } catch (err) {
+            console.error(err);
+            setError(err.message || 'Error al autenticar con Google.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -127,6 +141,21 @@ export default function Login() {
                             )}
                         </button>
                     </form>
+
+                    <div className="relative flex items-center justify-center mt-8 mb-6">
+                        <div className="border-t border-slate-200 w-full"></div>
+                        <span className="bg-white px-4 text-sm font-semibold text-slate-500 absolute">O</span>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                        className="w-full bg-white border border-slate-200 hover:bg-slate-50 disabled:bg-slate-100 disabled:text-slate-400 text-slate-700 font-bold py-3.5 px-4 rounded-xl flex justify-center items-center gap-3 transition-colors shadow-sm"
+                    >
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+                        Continuar con Google
+                    </button>
 
                     <div className="mt-8 text-center text-sm text-slate-500">
                         {isLogin ? (

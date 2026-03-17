@@ -3,10 +3,11 @@ import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
-    signOut
+    signOut,
+    signInWithPopup
 } from "firebase/auth";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "../firebase/config";
+import { auth, db, googleProvider } from "../firebase/config";
 
 const AuthContext = createContext();
 
@@ -65,10 +66,30 @@ export const AuthProvider = ({ children }) => {
         return signOut(auth);
     };
 
+    const loginWithGoogle = async (selectedRole) => {
+        const userCredential = await signInWithPopup(auth, googleProvider);
+        const user = userCredential.user;
+
+        // Create user document in Firestore if it doesn't exist
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) {
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                name: user.displayName || user.email.split('@')[0],
+                email: user.email,
+                role: selectedRole || "tenant",
+                phone: user.phoneNumber || "",
+                fechaRegistro: serverTimestamp()
+            });
+        }
+        return user;
+    };
+
     const value = {
         user,
         role,
         login,
+        loginWithGoogle,
         register,
         logout,
         loading
