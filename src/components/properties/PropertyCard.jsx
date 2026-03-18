@@ -29,6 +29,7 @@ export default function PropertyCard({ property }) {
                         src={mainImage}
                         alt={título}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'; }}
                     />
                     <div className="absolute top-3 left-3 flex gap-2">
                         <span className="bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm capitalize">
@@ -59,7 +60,7 @@ export default function PropertyCard({ property }) {
 
                     <div className="flex items-center text-slate-500 text-sm mb-4">
                         <MapPin className="w-4 h-4 mr-1 shrink-0" />
-                        <span className="truncate">{zona}, Comayagua</span>
+                        <span className="truncate">{property.residencial || property.zona}</span>
                     </div>
 
                     <div className="flex items-center gap-4 text-sm text-slate-600 mb-4 mt-auto">

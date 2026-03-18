@@ -3,50 +3,20 @@ import { Search, ShieldCheck, Home as HomeIcon, Star } from 'lucide-react';
 import SearchBar from '../components/search/SearchBar';
 import PropertyCard from '../components/properties/PropertyCard';
 
-// Dummy data for initial display
-const FEATURED_PROPERTIES = [
-    {
-        id: '1',
-        título: 'Casa Residencial moderna en Zona Centro',
-        precio: 15000,
-        tipo: 'casa',
-        zona: 'centro',
-        estadoVerificacion: 'verified',
-        habitaciones: 3,
-        banos: 2,
-        promedioCalificacion: 4.8,
-        totalResenas: 12,
-        imagenes: ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-    },
-    {
-        id: '2',
-        título: 'Apartamento Amueblado Cerca de Palmerola',
-        precio: 12000,
-        tipo: 'apartamento',
-        zona: 'palmerola',
-        estadoVerificacion: 'verified',
-        habitaciones: 2,
-        banos: 1,
-        promedioCalificacion: 4.5,
-        totalResenas: 8,
-        imagenes: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-    },
-    {
-        id: '3',
-        título: 'Cuarto para Estudiante en Brisas del Humuya',
-        precio: 4500,
-        tipo: 'cuarto',
-        zona: 'brisas',
-        estadoVerificacion: 'pending',
-        habitaciones: 1,
-        banos: 1,
-        promedioCalificacion: 0,
-        totalResenas: 0,
-        imagenes: ['https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-    }
-];
+import { ALL_PROPERTIES } from '../data/mockProperties';
+import { useNavigate } from 'react-router-dom';
+
+// Get featured properties (first 3)
+const FEATURED_PROPERTIES = ALL_PROPERTIES.slice(0, 3);
 
 export default function Home() {
+    const navigate = useNavigate();
+
+    const handleSearch = (filters) => {
+        // Redirect to search page with filters as URL params or state
+        navigate('/search', { state: { filters } });
+    };
+
     return (
         <div className="space-y-16 pb-12">
             {/* Hero Section */}
@@ -72,7 +42,7 @@ export default function Home() {
 
             {/* Floating Search Bar */}
             <section className="px-4">
-                <SearchBar />
+                <SearchBar onSearch={handleSearch} />
             </section>
 
             {/* Features / Trust signals */}

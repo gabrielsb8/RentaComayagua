@@ -3,7 +3,7 @@ import { Search, Filter } from 'lucide-react';
 
 export default function SearchBar({ onSearch }) {
     const [filters, setFilters] = useState({
-        keyword: '',
+        residencial: '',
         tipo: '',
         zona: '',
         minPrecio: '',
@@ -23,15 +23,15 @@ export default function SearchBar({ onSearch }) {
     return (
         <div className="bg-white rounded-2xl shadow-lg p-3 md:p-4 mt-8 md:-mt-12 relative z-10 w-full max-w-5xl mx-auto border border-slate-100">
             <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-3">
-                {/* keyword search */}
+                {/* keyword search / residencial */}
                 <div className="flex-grow flex items-center bg-slate-50 rounded-xl px-4 py-3 border border-slate-200 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
                     <Search className="h-5 w-5 text-slate-400 mr-2 shrink-0" />
                     <input
                         type="text"
-                        name="keyword"
-                        placeholder="Buscar por zona, residencial..."
+                        name="residencial"
+                        placeholder="Buscar por residencial o colonia..."
                         className="w-full bg-transparent border-none focus:outline-none text-slate-700 placeholder:text-slate-400"
-                        value={filters.keyword}
+                        value={filters.residencial}
                         onChange={handleChange}
                     />
                 </div>
@@ -65,7 +65,7 @@ export default function SearchBar({ onSearch }) {
                         <option value="otros">Otras Zonas</option>
                     </select>
 
-                    {/* Price Range (Simplified for top bar) */}
+                    {/* Price Range */}
                     <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 min-w-[200px]">
                         <input
                             type="number"

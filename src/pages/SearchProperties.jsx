@@ -1,68 +1,25 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import SearchBar from '../components/search/SearchBar';
 import PropertyCard from '../components/properties/PropertyCard';
 import { Filter, ArrowUpDown } from 'lucide-react';
 
-// Using the same dummy data for now
-const ALL_PROPERTIES = [
-    {
-        id: '1',
-        título: 'Casa Residencial moderna en Zona Centro',
-        precio: 15000,
-        tipo: 'casa',
-        zona: 'centro',
-        estadoVerificacion: 'verified',
-        habitaciones: 3,
-        banos: 2,
-        promedioCalificacion: 4.8,
-        totalResenas: 12,
-        imagenes: ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-    },
-    {
-        id: '2',
-        título: 'Apartamento Amueblado Cerca de Palmerola',
-        precio: 12000,
-        tipo: 'apartamento',
-        zona: 'palmerola',
-        estadoVerificacion: 'verified',
-        habitaciones: 2,
-        banos: 1,
-        promedioCalificacion: 4.5,
-        totalResenas: 8,
-        imagenes: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-    },
-    {
-        id: '3',
-        título: 'Cuarto para Estudiante en Brisas del Humuya',
-        precio: 4500,
-        tipo: 'cuarto',
-        zona: 'brisas',
-        estadoVerificacion: 'pending',
-        habitaciones: 1,
-        banos: 1,
-        promedioCalificacion: 0,
-        totalResenas: 0,
-        imagenes: ['https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-    },
-    {
-        id: '4',
-        título: 'Casa amplia en Barrio Escalante',
-        precio: 18000,
-        tipo: 'casa',
-        zona: 'escalante',
-        estadoVerificacion: 'verified',
-        habitaciones: 4,
-        banos: 3,
-        promedioCalificacion: 5.0,
-        totalResenas: 2,
-        imagenes: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80']
-    }
-];
+import { ALL_PROPERTIES } from '../data/mockProperties';
 
 export default function SearchProperties() {
+    const location = useLocation();
+    const initialFilters = location.state?.filters || null;
+
     const [properties, setProperties] = useState(ALL_PROPERTIES);
     const [loading, setLoading] = useState(false);
     const [sortBy, setSortBy] = useState('recent');
+
+    // Run search on mount if initial filters exist
+    useEffect(() => {
+        if (initialFilters) {
+            handleSearch(initialFilters);
+        }
+    }, []);
 
     const handleSearch = (filters) => {
         setLoading(true);
@@ -73,7 +30,7 @@ export default function SearchProperties() {
                 if (filters.zona && p.zona !== filters.zona) return false;
                 if (filters.minPrecio && p.precio < parseInt(filters.minPrecio)) return false;
                 if (filters.maxPrecio && p.precio > parseInt(filters.maxPrecio)) return false;
-                if (filters.keyword && !p.título.toLowerCase().includes(filters.keyword.toLowerCase())) return false;
+                if (filters.residencial && !p.residencial.toLowerCase().includes(filters.residencial.toLowerCase())) return false;
                 return true;
             });
             setProperties(filtered);

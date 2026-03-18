@@ -1,29 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { MapPin, Bed, Bath, BadgeCheck, Phone, Star, Shield, Image as ImageIcon } from 'lucide-react';
 
+import { ALL_PROPERTIES } from '../data/mockProperties';
+
 export default function PropertyDetail() {
     const { id } = useParams();
 
     // Dummy property data based on ID
-    const property = {
-        id,
-        título: 'Casa Residencial moderna en Zona Centro',
-        descripcion: 'Hermosa casa recién remodelada en el corazón de Comayagua. Cuenta con amplios espacios, acabados de lujo, y está a 5 minutos de la catedral. Seguridad 24/7 en residencial circuito cerrado.',
-        precio: 15000,
-        tipo: 'casa',
-        zona: 'centro',
-        estadoVerificacion: 'verified',
-        servicios: ['Agua', 'Internet', 'Estacionamiento 2 vehiculos', 'Seguridad Privada'],
-        habitaciones: 3,
-        banos: 2,
-        promedioCalificacion: 4.8,
-        totalResenas: 12,
-        imagenes: [
-            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1600607687931-cecebd803400?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
-        ]
-    };
+    const property = ALL_PROPERTIES.find(p => p.id === id) || ALL_PROPERTIES[0];
 
     const isVerified = property.estadoVerificacion === 'verified';
     const whatsappMessage = encodeURIComponent(`Hola, vi tu propiedad "${property.título}" en RentaComayagua y me gustaría más información.`);
@@ -37,6 +21,7 @@ export default function PropertyDetail() {
                         src={property.imagenes[0]}
                         alt="Main property view"
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'; }}
                     />
                 </div>
                 <div className="hidden md:grid grid-rows-2 gap-4 h-full">
@@ -46,6 +31,7 @@ export default function PropertyDetail() {
                             src={img}
                             alt={`Property view ${i + 2}`}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                            onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'; }}
                         />
                     ))}
                 </div>
@@ -69,7 +55,7 @@ export default function PropertyDetail() {
                         <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">{property.título}</h1>
 
                         <div className="flex flex-wrap items-center text-slate-600 gap-x-6 gap-y-2 font-medium">
-                            <span className="flex items-center gap-1.5"><MapPin className="w-5 h-5 text-indigo-500" /> {property.zona}, Comayagua</span>
+                            <span className="flex items-center gap-1.5"><MapPin className="w-5 h-5 text-indigo-500" /> {property.residencial || property.zona}</span>
                             <span className="flex items-center gap-1.5"><Bed className="w-5 h-5 text-indigo-500" /> {property.habitaciones} Habitaciones</span>
                             <span className="flex items-center gap-1.5"><Bath className="w-5 h-5 text-indigo-500" /> {property.banos} Baños</span>
                         </div>
@@ -108,18 +94,29 @@ export default function PropertyDetail() {
                                 {property.promedioCalificacion} <span className="text-slate-500 text-sm font-normal">({property.totalResenas} reseñas)</span>
                             </div>
                         </div>
-                        {/* Dummy Review */}
-                        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 bg-indigo-200 rounded-full flex justify-center items-center text-indigo-700 font-bold">M</div>
-                                <div>
-                                    <h4 className="font-semibold text-slate-900">María López</h4>
-                                    <div className="flex gap-1">
-                                        {[1, 2, 3, 4, 5].map(star => <Star key={star} className="w-3 h-3 fill-amber-400 text-amber-400" />)}
+                        {/* Dynamic Reviews */}
+                        <div className="space-y-4">
+                            {property.resenas && property.resenas.map((resena) => (
+                                <div key={resena.id} className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-10 h-10 bg-indigo-200 rounded-full flex justify-center items-center text-indigo-700 font-bold">
+                                            {resena.autor.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-slate-900">{resena.autor}</h4>
+                                            <div className="flex gap-1">
+                                                {[1, 2, 3, 4, 5].map(star => (
+                                                    <Star 
+                                                        key={star} 
+                                                        className={`w-3 h-3 ${star <= resena.calificacion ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-slate-200'}`} 
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
+                                    <p className="text-slate-600">{resena.comentario}</p>
                                 </div>
-                            </div>
-                            <p className="text-slate-600">Excelente ubicación y la casa estaba en perfectas condiciones. El dueño fue muy amable durante el contrato.</p>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -134,10 +131,18 @@ export default function PropertyDetail() {
                             href={`https://wa.me/50400000000?text=${whatsappMessage}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-lg shadow-green-200"
+                            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-lg shadow-green-200 mb-4"
                         >
                             <Phone className="w-6 h-6" /> Contactar Propietario
                         </a>
+
+                        {property.propietario && (
+                            <div className="text-center mb-6">
+                                <p className="text-sm border border-slate-200 rounded-lg inline-block px-3 py-1 bg-slate-50 shadow-sm">
+                                    <span className="text-slate-500">Propietario:</span> <span className="font-semibold text-slate-800">{property.propietario.nombre}</span>
+                                </p>
+                            </div>
+                        )}
 
                         <div className="mt-6 flex items-start gap-3 text-sm text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-100">
                             <Shield className="w-6 h-6 text-slate-400 flex-shrink-0" />
