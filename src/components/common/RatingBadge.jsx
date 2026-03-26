@@ -1,10 +1,10 @@
 import { Star } from 'lucide-react';
 
-export default function RatingBadge({ 
-    promedioCalificacion = 0, 
-    totalResenas = 0, 
-    className = "", 
-    variant = "default" 
+export default function RatingBadge({
+    promedioCalificacion = 0,
+    totalResenas = 0,
+    className = "",
+    variant = "default"
 }) {
     const isRatingValid = Number(promedioCalificacion) > 0;
     const areReviewsValid = Number.isInteger(Number(totalResenas)) && Number(totalResenas) > 0;
