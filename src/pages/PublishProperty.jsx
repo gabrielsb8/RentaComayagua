@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { UploadCloud, CheckCircle2 } from 'lucide-react';
 
 export default function PublishProperty() {
-    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
