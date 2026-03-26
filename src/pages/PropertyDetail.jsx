@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { MapPin, Bed, Bath, BadgeCheck, Phone, Star, Shield, Image as ImageIcon } from 'lucide-react';
+import RatingBadge from '../components/common/RatingBadge';
 
 import { ALL_PROPERTIES } from '../data/mockProperties';
 
@@ -89,10 +90,11 @@ export default function PropertyDetail() {
                     <div>
                         <div className="flex items-center gap-4 mb-6">
                             <h2 className="text-2xl font-bold text-slate-900">Reseñas</h2>
-                            <div className="flex items-center gap-1 text-lg font-semibold text-slate-800 bg-amber-50 px-3 py-1 rounded-lg">
-                                <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                                {property.promedioCalificacion} <span className="text-slate-500 text-sm font-normal">({property.totalResenas} reseñas)</span>
-                            </div>
+                            {Number(property.promedioCalificacion) > 0 ? (
+                                <RatingBadge promedioCalificacion={property.promedioCalificacion} totalResenas={property.totalResenas} variant="large" />
+                            ) : (
+                                <RatingBadge promedioCalificacion={0} totalResenas={0} variant="large" />
+                            )}
                         </div>
                         {/* Dynamic Reviews */}
                         <div className="space-y-4">

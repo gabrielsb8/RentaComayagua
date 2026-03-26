@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, BadgeCheck, Star } from 'lucide-react';
+import RatingBadge from '../common/RatingBadge';
 
 export default function PropertyCard({ property }) {
     // Destructure with defaults
@@ -9,7 +10,6 @@ export default function PropertyCard({ property }) {
         título,
         precio,
         tipo,
-        zona,
         estadoVerificacion,
         promedioCalificacion = 0,
         totalResenas = 0,
@@ -49,12 +49,10 @@ export default function PropertyCard({ property }) {
                         <h3 className="font-semibold text-lg text-slate-900 line-clamp-1 group-hover:text-indigo-600 transition-colors">
                             {título}
                         </h3>
-                        {promedioCalificacion > 0 && (
-                            <div className="flex items-center gap-1 text-sm font-medium text-slate-700 bg-slate-50 px-2 rounded-md">
-                                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                                {promedioCalificacion.toFixed(1)}
-                                <span className="text-slate-400 font-normal">({totalResenas})</span>
-                            </div>
+                        {Number(promedioCalificacion) > 0 ? (
+                            <RatingBadge promedioCalificacion={promedioCalificacion} totalResenas={totalResenas} />
+                        ) : (
+                            <RatingBadge promedioCalificacion={0} totalResenas={0} />
                         )}
                     </div>
 

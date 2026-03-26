@@ -14,13 +14,6 @@ export default function SearchProperties() {
     const [loading, setLoading] = useState(false);
     const [sortBy, setSortBy] = useState('recent');
 
-    // Run search on mount if initial filters exist
-    useEffect(() => {
-        if (initialFilters) {
-            handleSearch(initialFilters);
-        }
-    }, []);
-
     const handleSearch = (filters) => {
         setLoading(true);
         // Simulate API call
@@ -38,6 +31,14 @@ export default function SearchProperties() {
         }, 600);
     };
 
+    // Run search on mount if initial filters exist
+    useEffect(() => {
+        if (initialFilters) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            handleSearch(initialFilters);
+        }
+    }, [initialFilters]);
+
     const sortProperties = (props, method) => {
         switch (method) {
             case 'price_asc':
@@ -52,6 +53,7 @@ export default function SearchProperties() {
     };
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setProperties(prev => sortProperties(prev, sortBy));
     }, [sortBy]);
 
